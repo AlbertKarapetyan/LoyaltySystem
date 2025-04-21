@@ -1,0 +1,15 @@
+services:
+    ls-db-migrator:
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__PGSql=User ID=postgres;Password=Ak.123456Qw;Host=ls-postgresql;Port=5432;Database=ls_test;
+
+    loyalty-system:
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_HTTP_PORTS=5000
+            - ASPNETCORE_URLS=http://+:5000
+            - ConnectionStrings__PGSql=User ID=postgres;Password=Ak.123456Qw;Host=ls-postgresql;Port=5432;Database=ls_test;
+            - Redis__ConnectionString=ls-redis:6379,abortConnect=false
+        ports:
+            - "5000:5000"

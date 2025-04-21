@@ -1,0 +1,100 @@
+services:
+    # Runs Tests Before Deployment
+    ls-test-runner:
+        image: mcr.microsoft.com/dotnet/sdk:8.0
+        container_name: ls-test-runner
+        working_dir: /app
+        volumes:
+            - .:/app
+        command: >
+            sh -c "dotnet restore LoyaltySystem.sln &&
+                   dotnet test LS.Test/LS.Test.csproj --configuration Release --no-restore"
+        networks:
+            - ls_network
+ 
+    # PostgreSQL Database
+    ls-postgresql:
+        image: postgres:latest
+        container_name: ls-postgresql
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: Ak.123456Qw
+            POSTGRES_DB: ls
+        ports:
+            - "5433:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - ls_network
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+    
+    # Apply Migrations Before Running the App
+    ls-db-migrator:
+        image: mcr.microsoft.com/dotnet/sdk:8.0
+        container_name: ls-db-migrator
+        depends_on:
+            ls-postgresql:
+                condition: service_healthy
+        volumes:
+            - .:/app
+        working_dir: /app
+        environment:
+            ConnectionStrings__DefaultConnection: "Host=ls-postgresql;Port=5432;Database=ls;Username=postgres;Password=Ak.123456Qw"
+            ASPNETCORE_ENVIRONMENT: Production
+        command: >
+             bash -c "unset PATH &&
+             export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.dotnet/tools' &&
+             dotnet --info &&
+             dotnet tool install --global dotnet-ef &&
+             dotnet restore LoyaltySystem.sln &&
+             dotnet ef database update --project LS.Data.Migrations/LS.Data.Migrations.csproj --startup-project LoyaltySystem/LoyaltySystem.csproj"
+        
+        networks:
+            - ls_network
+    
+    # Redis
+    ls-redis:
+        image: redis:latest
+        container_name: ls-redis
+        ports:
+            - "6380:6379"
+        volumes:
+            - redis_data:/data
+        networks:
+            - ls_network
+
+    # Main Application
+    loyalty-system:
+        image: loyalty-system
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: loyalty-system
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Production
+            - ASPNETCORE_URLS=http://+:8787
+            - ConnectionStrings__DefaultConnection=Host=ls-postgresql;Port=5432;Database=ls;Username=postgres;Password=Ak.123456Qw
+        ports:
+            - "5555:8787"
+        depends_on:
+            - ls-test-runner
+            - ls-db-migrator
+        networks:
+            - ls_network
+        healthcheck:
+          test: ["CMD", "echo", "OK"] 
+          interval: 10s
+          timeout: 5s
+          retries: 5
+
+networks:
+  ls_network:
+    driver: bridge
+
+volumes:
+    postgres_data:
+    redis_data:
