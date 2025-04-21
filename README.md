@@ -17,6 +17,7 @@ Welcome to the **LoyaltySystem** project — a modular, production-ready loyalty
 - **Docker** and **Docker Compose** setup.
 - **Unit Tests** with controllers and services coverage.
 - **Swagger** for API documentation.
+- **Serilog** for structured logging (async logging to console and file).
 
 ## Tech Stack
 
@@ -31,6 +32,7 @@ Welcome to the **LoyaltySystem** project — a modular, production-ready loyalty
 - PostgreSQL
 - xUnit (for unit tests)
 - Moq
+- Serilog (for logging)
 
 ## Features
 
@@ -44,6 +46,7 @@ Welcome to the **LoyaltySystem** project — a modular, production-ready loyalty
 - Automated database migrations.
 - Unit testing support.
 - Full containerization with Docker.
+- Async logging with Serilog to console and log files in the `Logs` folder.
 
 ## Getting Started
 
@@ -75,6 +78,9 @@ Welcome to the **LoyaltySystem** project — a modular, production-ready loyalty
    ```
 
 6. Access Swagger UI at `https://localhost:{port}/swagger` to explore the API endpoints.
+
+### Logging with Serilog
+Serilog is configured to log messages asynchronously and output them both to the console and to log files. Log files are saved in the Logs folder with a rolling date pattern.
 
 ### Setup Instructions (with Docker Compose)
 
