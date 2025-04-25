@@ -118,13 +118,13 @@ cd test/LS.Test
 ```
 LoyaltySystem.sln
 src/
-  LoyaltySystem.API/             // API layer (Controllers, Middleware, Program.cs, Startup configs)
+  LoyaltySystem.API/             // API layer (Controllers, Middleware)
   LoyaltySystem.Application/     // Application layer (CQRS - Commands, Queries, Handlers, DTOs, Validators)
-  LoyaltySystem.Domain/          // Domain layer (Entities, ValueObjects, Enums, Domain Events)
+  LoyaltySystem.Domain/          // Domain layer (Entities, ValueObjects)
   LoyaltySystem.Infrastructure/  // Infrastructure layer (DbContext, Migrations, Repository Implementations, External Services)
-  LoyaltySystem/                 // Shared Kernel (Interfaces, Base Classes like BaseEntity, IRepository, Result types)
+  LoyaltySystem/                 // Main
 tests/
-  LS.Test/                       // Unit Tests and Integration Tests
+  LS.Test/                       // Unit Tests
 Dockerfile                       // Dockerfile for building API project
 docker-compose.yml               // Docker Compose file orchestrating API, PostgreSQL, Redis, and migrations
 ```
